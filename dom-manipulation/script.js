@@ -84,6 +84,30 @@ function createAddQuoteForm() {
   container.appendChild(button);
 }
 
+function addQuote() {
+  const newText = document.getElementById("newQuoteText").value.trim();
+  const newCategory = document.getElementById("newQuoteCategory").value.trim();
+
+  if (!newText || !newCategory) {
+    alert("Please fill in both fields.");
+    return;
+  }
+
+  const newQuote = { text: newText, category: newCategory };
+  quotes.push(newQuote);
+  saveQuotes();
+
+  document.getElementById("newQuoteText").value = "";
+  document.getElementById("newQuoteCategory").value = "";
+
+  populateCategories();
+  filterQuotes();
+
+  // ✅ Simulate sending to server
+  postQuoteToServer(newQuote);
+}
+
+
 // ========================
 // Filtering by Category
 // ========================
