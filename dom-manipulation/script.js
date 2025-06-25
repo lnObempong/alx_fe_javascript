@@ -259,24 +259,37 @@ async function syncWithServer() {
   syncStatus.textContent = "Syncing...";
 
   try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-    const serverData = await response.json();
-
-    const newServerQuotes = serverData.slice(0, 5).map(mapServerPostToQuote); // Simulate 5 new quotes
-
-    let merged = [...quotes];
+    const serverQuotes = await fetchQuotesFromServer();
     let newCount = 0;
 
-    newServerQuotes.forEach(serverQuote => {
+    serverQuotes.forEach(serverQuote => {
       const exists = quotes.some(localQuote =>
-        localQuote.text === serverQuote.text && localQuote.category === serverQuote.category
+        localQuote.text === serverQuote.text &&
+        localQuote.category === serverQuote.category
       );
 
       if (!exists) {
-        merged.push(serverQuote);
+        quotes.push(serverQuote);
         newCount++;
       }
     });
+
+    if (newCount > 0) {
+      saveQuotes();
+      populateCategories();
+      filterQuotes();
+    }
+
+    // ✅ FINAL REQUIRED MESSAGE
+    syncStatus.textContent = "Quotes synced with server!";
+
+  } catch (error) {
+    console.error("Sync error:", error);
+    syncStatus.textContent = "❌ Failed to sync with server.";
+  }
+
+  setTimeout(() => syncStatus.textContent = "", 5000);
+}
 
     if (newCount > 0) {
       quotes = merged;
