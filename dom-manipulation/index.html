@@ -14,6 +14,12 @@
 
   <!-- Form to Add New Quote -->
   <div id="quoteFormContainer"></div>
+<hr />
+<!-- JSON Export -->
+<button onclick="exportToJson()">Export Quotes</button>
+
+<!-- JSON Import -->
+<input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
 
 
   <script src="script.js"></script>
