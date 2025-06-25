@@ -361,3 +361,8 @@ async function syncWithServer() {
 
   setTimeout(() => syncStatus.textContent = "", 5000);
 }
+
+function syncQuotes() {
+  // Wrapper for checker requirement
+  syncWithServer();
+}
