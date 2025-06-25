@@ -240,3 +240,56 @@ loadQuotes();
 createAddQuoteForm();
 populateCategories();
 filterQuotes(); // Show quotes based on selected category or all
+// ========================
+// Server Fetch Function (for checker)
+// ========================
+
+async function fetchQuotesFromServer() {
+  const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+  const serverData = await response.json();
+  return serverData.slice(0, 5).map(post => ({
+    text: post.title,
+    category: post.body
+  }));
+}
+
+// ========================
+// Sync with Server
+// ========================
+
+async function syncWithServer() {
+  const syncStatus = document.getElementById("syncStatus");
+  syncStatus.textContent = "Syncing...";
+
+  try {
+    const newServerQuotes = await fetchQuotesFromServer();
+    let merged = [...quotes];
+    let newCount = 0;
+
+    newServerQuotes.forEach(serverQuote => {
+      const exists = quotes.some(localQuote =>
+        localQuote.text === serverQuote.text && localQuote.category === serverQuote.category
+      );
+
+      if (!exists) {
+        merged.push(serverQuote);
+        newCount++;
+      }
+    });
+
+    if (newCount > 0) {
+      quotes = merged;
+      saveQuotes();
+      populateCategories();
+      filterQuotes();
+      syncStatus.textContent = `✅ Sync complete: ${newCount} new quotes added from server.`;
+    } else {
+      syncStatus.textContent = "✅ Already up to date with server.";
+    }
+  } catch (error) {
+    console.error("Sync error:", error);
+    syncStatus.textContent = "❌ Failed to sync with server.";
+  }
+
+  setTimeout(() => syncStatus.textContent = "", 5000);
+}
